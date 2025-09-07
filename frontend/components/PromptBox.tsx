@@ -79,27 +79,33 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
   };
 
   return (
-    <Card className={cn("p-6 bg-slate-800/90 border-slate-600 backdrop-blur-sm shadow-xl", className)}>
-      <div className="space-y-4">
+    <Card className={cn(
+      "relative p-8 bg-card-bg/80 backdrop-blur-sm border border-white/20 rounded-3xl shadow-2xl",
+      "before:absolute before:inset-0 before:rounded-3xl before:p-[1px] before:bg-gradient-to-r before:from-accent-neon/30 before:via-purple-500/30 before:to-accent-neon/30",
+      "before:mask-[linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] before:mask-composite-[xor] before:[mask-composite:exclude]",
+      "animate-fade-in",
+      className
+    )}>
+      <div className="relative z-10 space-y-6">
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Build a real-time chat application using web-sockets, with an 80s retro theme..."
-          className="min-h-[120px] bg-slate-700/50 border-slate-500 text-white placeholder-slate-400 resize-none focus:border-yellow-400 focus:ring-yellow-400/20"
+          className="min-h-[140px] bg-bg-dark/50 border-white/20 text-white placeholder-muted-text resize-none focus:border-accent-neon/50 focus:ring-accent-neon/20 rounded-2xl text-lg leading-relaxed"
           disabled={isPending}
           aria-label="App description prompt"
         />
         
         <div className="flex items-center justify-between">
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <Button
               variant="outline"
               size="sm"
               onClick={handleSurpriseMe}
               disabled={isPending}
-              className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
+              className="border-white/20 text-muted-text hover:text-white hover:bg-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105 rounded-full"
             >
-              <Shuffle className="h-4 w-4 mr-1" />
+              <Shuffle className="h-4 w-4 mr-2" />
               Surprise me
             </Button>
             
@@ -107,9 +113,9 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
               variant="outline"
               size="sm"
               disabled={isPending}
-              className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
+              className="border-white/20 text-muted-text hover:text-white hover:bg-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105 rounded-full"
             >
-              <Database className="h-4 w-4 mr-1" />
+              <Database className="h-4 w-4 mr-2" />
               Connect Database
             </Button>
 
@@ -118,16 +124,16 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
                 variant="outline"
                 size="sm"
                 onClick={onTogglePreview}
-                className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
+                className="border-white/20 text-muted-text hover:text-white hover:bg-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105 rounded-full"
               >
                 {showPreview ? (
                   <>
-                    <EyeOff className="h-4 w-4 mr-1" />
+                    <EyeOff className="h-4 w-4 mr-2" />
                     Hide Preview
                   </>
                 ) : (
                   <>
-                    <Eye className="h-4 w-4 mr-1" />
+                    <Eye className="h-4 w-4 mr-2" />
                     Show Preview
                   </>
                 )}
@@ -138,16 +144,19 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
           <Button
             onClick={handleSubmit}
             disabled={isPending || !prompt.trim()}
-            className="bg-yellow-500 hover:bg-yellow-400 text-black font-medium px-6 shadow-lg hover:shadow-xl transition-all duration-200"
+            className="bg-accent-neon hover:bg-accent-neon/90 text-black font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            style={{
+              filter: isPending ? 'none' : 'drop-shadow(0 0 20px rgba(255, 255, 0, 0.3))'
+            }}
           >
             {isPending ? (
               <>
-                <Wand2 className="h-4 w-4 mr-2 animate-spin" />
+                <Wand2 className="h-5 w-5 mr-2 animate-spin" />
                 Generating...
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 mr-2" />
+                <Sparkles className="h-5 w-5 mr-2" />
                 Generate App
               </>
             )}
