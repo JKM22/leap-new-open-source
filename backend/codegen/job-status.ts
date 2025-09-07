@@ -4,7 +4,7 @@ import { jobQueue } from "./job-queue";
 
 // Gets the status of a code generation job.
 export const getJobStatus = api<JobStatusRequest, JobStatusResponse>(
-  { expose: true, method: "GET", path: "/jobs/:id" },
+  { expose: true, method: "GET", path: "/codegen/jobs/:id" },
   async (req) => {
     const job = jobQueue.getJob(req.id);
     

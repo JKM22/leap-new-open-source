@@ -4,8 +4,8 @@ import { rateLimiter } from "./rate-limiter";
 import { jobQueue } from "./job-queue";
 
 // Generates code based on a prompt.
-export const generate = api<GenerateRequest, GenerateResponse>(
-  { expose: true, method: "POST", path: "/generate" },
+export const generateCode = api<GenerateRequest, GenerateResponse>(
+  { expose: true, method: "POST", path: "/codegen/generate" },
   async (req) => {
     // For demo purposes, using a simple client ID
     // In production, this would come from authentication context

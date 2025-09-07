@@ -2,7 +2,6 @@ import { api, APIError } from "encore.dev/api";
 import { notesDB } from "./db";
 import { CreateNoteRequest, Note } from "./models";
 import { noteCreatedTopic } from "./events";
-import { eventBus } from "../event-bus/bus";
 
 // Creates a new note.
 export const createNote = api<CreateNoteRequest, Note>(
@@ -71,21 +70,6 @@ export const createNote = api<CreateNoteRequest, Note>(
         noteId: note.id,
         userId: note.userId,
         timestamp: now
-      });
-      
-      // Also publish to external event bus for broader system integration
-      await eventBus.publish('notes.created', {
-        id: `note_${note.id}`,
-        type: 'notes.created',
-        source: 'notes-service',
-        data: {
-          noteId: note.id,
-          userId: note.userId,
-          title: note.title,
-          body: note.body
-        },
-        timestamp: now,
-        version: '1.0'
       });
       
       return note;

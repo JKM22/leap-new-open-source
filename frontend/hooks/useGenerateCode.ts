@@ -12,7 +12,7 @@ export function useGenerateCode() {
 
   return useMutation({
     mutationFn: async (request: GenerateCodeRequest) => {
-      return await backend.codegenService.generate(request);
+      return await backend.codegen.generateCode(request);
     },
     onSuccess: () => {
       // Invalidate projects query to refresh the list

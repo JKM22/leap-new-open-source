@@ -1,6 +1,6 @@
 import { api } from "encore.dev/api";
 import { secret } from "encore.dev/config";
-import { EventBusAdapter, Event, PublishEventRequest, SubscribeRequest } from "./types";
+import { EventBusAdapter, Event, PublishEventRequest } from "./types";
 import { KafkaAdapter, CloudPubSubAdapter, NATSAdapter } from "./adapters";
 
 const eventBusType = secret("EventBusType");
@@ -59,31 +59,6 @@ export const publishEvent = api<PublishEventRequest, void>(
     };
 
     await eventBus.publish(req.topic, event);
-  }
-);
-
-// Subscribes to events from a topic.
-export const subscribeToEvents = api<SubscribeRequest, void>(
-  { expose: true, method: "POST", path: "/events/subscribe" },
-  async (req) => {
-    await eventBus.subscribe(req.topic, async (event) => {
-      // Forward event to webhook or internal handler
-      if (req.webhookUrl) {
-        try {
-          await fetch(req.webhookUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(event)
-          });
-        } catch (error) {
-          console.error('Failed to deliver webhook:', error);
-        }
-      }
-      
-      console.log(`Received event on ${req.topic}:`, event);
-    });
   }
 );
 
