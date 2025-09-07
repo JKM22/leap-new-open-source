@@ -1,0 +1,43 @@
+[profiles.aws-default]
+cloud = "aws"
+region = "us-east-1"
+
+[profiles.aws-default.database]
+engine = "postgresql"
+instance_class = "db.t3.micro"
+storage = 20
+
+[profiles.aws-default.deployment]
+platform = "ecs"
+cpu = 256
+memory = 512
+
+[profiles.gcp-default]
+cloud = "gcp"
+region = "us-central1"
+
+[profiles.gcp-default.database]
+engine = "postgresql"
+tier = "db-f1-micro"
+storage = 10
+
+[profiles.gcp-default.deployment]
+platform = "cloud-run"
+cpu = "1000m"
+memory = "512Mi"
+
+[profiles.local]
+database_url = "postgresql://leap_dev:leap_dev_password@localhost:5432/leap_dev"
+
+[build]
+exclude = [
+  "frontend/node_modules",
+  "frontend/dist",
+  "*.md",
+  ".git",
+  "docker-compose*.yml"
+]
+
+[experimental]
+tracing = true
+metrics = true

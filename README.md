@@ -2,168 +2,316 @@
 
 An open-source platform for AI-driven full-stack application generation using natural language prompts. Built with Encore.ts microservices architecture, React frontend, and PostgreSQL.
 
-## 🚀 Features
+## 🚀 Overview
 
-- **AI Code Generation**: Natural language to full-stack application code
-- **Microservices Architecture**: Modular, scalable backend services
-- **Real-time Updates**: Event-driven communication between services
-- **Modern UI**: Dark theme with Leap.new-inspired interface
-- **Multi-cloud Deployment**: AWS and GCP support via Encore
-- **Type-safe APIs**: Full-stack TypeScript with auto-generated clients
+Leap.new Open Source is a comprehensive platform that transforms natural language descriptions into production-ready applications. Unlike prototyping tools, it generates real backend services with APIs, databases, and deployments to major cloud providers.
+
+### Key Features
+
+- **AI Code Generation**: Transform prompts into full-stack applications
+- **Microservices Architecture**: Scalable backend built with Encore.ts
+- **Real-time Collaboration**: WebSocket-powered updates and event streaming
+- **Multi-cloud Deployment**: Deploy to AWS, GCP, or run locally
+- **Type-safe APIs**: End-to-end TypeScript with auto-generated clients
+- **Production Ready**: Built-in databases, caching, and monitoring
 
 ## 🏗️ Architecture
 
-- **API Gateway**: REST and GraphQL endpoint aggregation
-- **Notes Service**: Example CRUD service with tags and real-time updates
-- **CodeGen Service**: AI-powered code generation (OpenAI/local LLM)
-- **Web Frontend**: React + TypeScript + Tailwind UI
-- **Event Bus**: Pub/Sub for service communication
-- **PostgreSQL**: Managed database with migrations
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Frontend  │    │   API Gateway   │    │ CodeGen Service │
+│   (React/TS)    │◄──►│   (GraphQL +    │◄──►│   (AI/LLM)      │
+│                 │    │   REST + WS)    │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │                        │
+                                ▼                        ▼
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │  Notes Service  │    │   Event Bus     │
+                       │   (CRUD + Tags) │◄──►│ (Kafka/NATS/   │
+                       │                 │    │  Cloud Pub/Sub) │
+                       └─────────────────┘    └─────────────────┘
+                                │                        │
+                                ▼                        ▼
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │   PostgreSQL    │    │ Redis Cache     │
+                       │  (Multi-DB)     │    │   (Optional)    │
+                       └─────────────────┘    └─────────────────┘
+```
 
-## 🛠️ Local Development
+### Services
+
+- **API Gateway**: REST/GraphQL endpoints, WebSocket support, authentication
+- **Notes Service**: CRUD operations with tags, real-time events
+- **CodeGen Service**: AI-powered code generation with multiple LLM providers
+- **Event Bus**: Pluggable event system (Kafka, NATS, Cloud Pub/Sub)
+- **Web Frontend**: React + TypeScript + Tailwind CSS interface
+
+## 🛠️ Quickstart (Local Development)
 
 ### Prerequisites
 
 - Node.js 18+
+- Docker & Docker Compose
 - Encore CLI: `curl -L https://encore.dev/install.sh | bash`
 - Git
 
 ### Setup
 
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/leap-new/open-source.git
 cd leap-new-open-source
 ```
 
-2. Install dependencies:
+2. **Start development environment**
 ```bash
-encore app init
+make dev
 ```
 
-3. Set up environment variables:
+This will:
+- Start PostgreSQL, Redis, and NATS using Docker Compose
+- Install dependencies
+- Run database migrations
+- Start the Encore backend
+- Launch the frontend development server
+
+3. **Set up secrets** (optional for AI features)
 ```bash
-# Create secrets in Encore dashboard or via CLI
 encore secret set OpenAIKey "your-openai-api-key"
+encore secret set EventBusType "nats"
 ```
 
-4. Run database migrations:
+4. **Access the application**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
+- Encore Dashboard: http://localhost:4000/_encore
+
+### Alternative Setup (Manual)
+
 ```bash
+# Install dependencies
+npm install
+cd frontend && npm install
+
+# Start infrastructure
+docker-compose -f docker-compose.dev.yml up -d
+
+# Run migrations
 encore db migrate
-```
 
-5. Start development server:
-```bash
+# Start backend
 encore run
+
+# Start frontend (in another terminal)
+cd frontend && npm run dev
 ```
 
-The application will be available at:
-- Backend: `http://localhost:4000`
-- Frontend: `http://localhost:3000`
+## 🚀 Deploy to AWS
 
-## 🚀 Deployment
+### Prerequisites
+- AWS CLI configured
+- Encore account: [encore.dev](https://encore.dev)
 
-### AWS Deployment (Default)
+### Deploy
 
-1. Link your Encore app to AWS:
+1. **Create environment**
 ```bash
+make create-env-production
 encore env create production --cloud=aws
 ```
 
-2. Set production secrets:
+2. **Set production secrets**
 ```bash
 encore secret set --env=production OpenAIKey "your-production-openai-key"
+encore secret set --env=production EventBusType "kafka"
 ```
 
-3. Deploy:
+3. **Deploy**
 ```bash
-encore deploy production
+make deploy-aws ENV=production
 ```
 
-### GCP Deployment
+### Using Terraform (Optional)
 
-1. Link your Encore app to GCP:
+```bash
+cd terraform/aws
+terraform init
+terraform plan -var="db_password=your-secure-password"
+terraform apply
+```
+
+## 🌐 Deploy to GCP
+
+### Prerequisites
+- Google Cloud SDK configured
+- Encore account with GCP integration
+
+### Deploy
+
+1. **Create environment**
 ```bash
 encore env create production --cloud=gcp
 ```
 
-2. Set production secrets and deploy as above.
-
-### GitHub Actions CI/CD
-
-The repository includes automated CI/CD pipelines:
-
-- **Pull Request**: Runs tests and linting
-- **Main Branch**: Deploys to staging environment
-- **Tagged Release**: Deploys to production
-
-Set the following GitHub secrets:
-- `ENCORE_AUTH_TOKEN`: Your Encore authentication token
-
-## 🔄 2-Way GitHub Sync (Leap Workflow)
-
-Enable bidirectional sync between your local development and GitHub:
-
-1. Install GitHub CLI: `gh auth login`
-2. Configure Encore GitHub integration:
+2. **Set secrets**
 ```bash
-encore auth login --github
-encore app link-github <your-repo>
+encore secret set --env=production OpenAIKey "your-openai-key"
+encore secret set --env=production GCPProjectId "your-project-id"
 ```
 
-3. Enable auto-sync in Encore dashboard:
-   - Go to your app settings
-   - Enable "GitHub Sync"
-   - Configure sync preferences
-
-## 📚 API Documentation
-
-Once running, access the API documentation at:
-- REST API: `http://localhost:4000/`
-- GraphQL Playground: `http://localhost:4000/graphql`
-
-## 🧪 Testing
-
-Run the test suite:
+3. **Deploy**
 ```bash
-# Backend tests
+make deploy-gcp ENV=production
+```
+
+## 🧪 Run Tests
+
+```bash
+# Run all tests
+make test
+
+# Backend tests only
 encore test
 
-# Frontend tests
+# Frontend tests only
 cd frontend && npm test
 
 # Integration tests
-npm run test:e2e
+encore test --integration
+
+# Test with coverage
+make test
 ```
 
-## 🤝 Contributing
+## 📚 API Documentation
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+Once running, access the API documentation:
+- REST API: http://localhost:4000/
+- GraphQL Playground: http://localhost:4000/graphql
+- WebSocket: ws://localhost:4000/ws
+
+### Example API Usage
+
+```bash
+# Create a note
+curl -X POST http://localhost:4000/notes \
+  -H "Content-Type: application/json" \
+  -d '{"title": "My Note", "body": "Note content"}'
+
+# Generate code
+curl -X POST http://localhost:4000/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Create a todo app", "target": "frontend"}'
+
+# Deploy an app
+curl -X POST http://localhost:4000/deploy \
+  -H "Content-Type: application/json" \
+  -d '{"appId": "app123", "target": "aws", "environment": "production"}'
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+See `.env.example` for all configuration options.
+
+Key settings:
+- `EVENT_BUS_TYPE`: Event bus adapter (nats, kafka, gcp-pubsub)
+- `DATABASE_URL`: PostgreSQL connection string
+- `OPENAI_API_KEY`: For AI code generation
+- `AWS_REGION` / `GCP_PROJECT_ID`: Cloud deployment settings
+
+### Encore Profiles
+
+Configure deployment targets in `encore.toml`:
+- `aws-default`: AWS ECS deployment
+- `gcp-default`: Google Cloud Run deployment
+- `local`: Local development
+
+## 🤝 How to Contribute
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `make test`
+5. Submit a pull request
+
+### Development Workflow
+
+- **Code Style**: We use Prettier and ESLint
+- **Testing**: Write tests for new features
+- **Documentation**: Update docs for API changes
+- **Commits**: Use conventional commit messages
+
+## 📋 Roadmap
+
+### Current Features
+- ✅ AI-powered code generation
+- ✅ Real-time WebSocket updates
+- ✅ Multi-cloud deployment
+- ✅ Event-driven architecture
+- ✅ Type-safe APIs
+
+### Upcoming Features
+- 🔄 User authentication & teams
+- 🔄 Advanced code templates
+- 🔄 Visual app builder
+- 🔄 GitHub integration
+- 🔄 Monitoring & analytics
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Backend won't start**
+```bash
+# Check if ports are in use
+lsof -i :4000
+# Kill conflicting processes
+make clean && make dev
+```
+
+**Database connection errors**
+```bash
+# Reset database
+make db-reset
+# Check Docker containers
+docker-compose -f docker-compose.dev.yml logs postgres
+```
+
+**Frontend build issues**
+```bash
+# Clear node modules
+cd frontend && rm -rf node_modules package-lock.json
+npm install
+```
+
+### Getting Help
+
+- 📖 [Documentation](https://docs.leap.new)
+- 💬 [Discord Community](https://discord.gg/leap)
+- 🐛 [GitHub Issues](https://github.com/leap-new/open-source/issues)
+- 📧 [Email Support](mailto:support@leap.new)
 
 ## 📄 License
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-## 🏢 Services Overview
+## 🙏 Acknowledgments
 
-### API Gateway
-- REST and GraphQL endpoint aggregation
-- Request routing and load balancing
-- Cross-service data composition
+- [Encore.ts](https://encore.dev) - Backend framework
+- [OpenAI](https://openai.com) - AI code generation
+- [Tailwind CSS](https://tailwindcss.com) - UI styling
+- [React](https://react.dev) - Frontend framework
 
-### Notes Service
-- CRUD operations for notes
-- Tag management system
-- Real-time event publishing
+## 🌟 Star History
 
-### CodeGen Service
-- AI-powered code generation
-- Support for multiple LLM providers
-- Template-based code scaffolding
+[![Star History Chart](https://api.star-history.com/svg?repos=leap-new/open-source&type=Date)](https://star-history.com/#leap-new/open-source&Date)
 
-### Web Frontend
-- React-based user interface
-- Real-time updates via WebSockets
-- Responsive design with Tailwind CSS
+---
 
-For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
+Made with ❤️ by the Leap.new team and contributors

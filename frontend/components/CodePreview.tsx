@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Download, ExternalLink, Eye, EyeOff, Code2 } from 'lucide-react';
+import { Copy, Download, ExternalLink, Eye, EyeOff, Code2, Rocket } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 interface CodePreviewProps {
   generatedCode: {
@@ -20,9 +21,18 @@ interface CodePreviewProps {
   };
   showPreview?: boolean;
   onTogglePreview?: () => void;
+  onDeploy?: () => void;
+  className?: string;
 }
 
-export function CodePreview({ generatedCode, metadata, showPreview = true, onTogglePreview }: CodePreviewProps) {
+export function CodePreview({ 
+  generatedCode, 
+  metadata, 
+  showPreview = true, 
+  onTogglePreview, 
+  onDeploy,
+  className 
+}: CodePreviewProps) {
   const [activeTab, setActiveTab] = useState('frontend');
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code');
   const { toast } = useToast();
@@ -65,7 +75,7 @@ export function CodePreview({ generatedCode, metadata, showPreview = true, onTog
 
   if (!showPreview) {
     return (
-      <Card className="p-8 bg-gray-900 border-gray-700 text-center">
+      <Card className={cn("p-8 bg-gray-900/50 border-gray-700 text-center", className)}>
         <div className="text-gray-400">
           <EyeOff className="h-16 w-16 mx-auto mb-4 opacity-50" />
           <h3 className="text-lg font-semibold mb-2">Preview Hidden</h3>
@@ -83,16 +93,19 @@ export function CodePreview({ generatedCode, metadata, showPreview = true, onTog
 
   if (tabs.length === 0) {
     return (
-      <Card className="p-8 bg-gray-900 border-gray-700 text-center">
-        <p className="text-gray-400">No code generated yet. Enter a prompt to get started!</p>
+      <Card className={cn("p-8 bg-gray-900/50 border-gray-700 text-center", className)}>
+        <div className="text-gray-400">
+          <div className="text-4xl mb-4">🚀</div>
+          <p>Generate an app to see the preview</p>
+        </div>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Metadata */}
-      <Card className="p-4 bg-gray-900 border-gray-700">
+    <div className={cn("space-y-4", className)}>
+      {/* Metadata & Actions */}
+      <Card className="p-4 bg-gray-900/50 border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 text-sm text-gray-400">
             <span>Type: {metadata.type}</span>
@@ -130,16 +143,22 @@ export function CodePreview({ generatedCode, metadata, showPreview = true, onTog
               </Button>
             )}
             
-            <Button size="sm" variant="outline" className="border-gray-600">
-              <ExternalLink className="h-4 w-4 mr-1" />
-              Deploy
-            </Button>
+            {onDeploy && (
+              <Button 
+                size="sm" 
+                onClick={onDeploy}
+                className="bg-leap-accent hover:bg-leap-accent/90 text-black"
+              >
+                <Rocket className="h-4 w-4 mr-1" />
+                Deploy
+              </Button>
+            )}
           </div>
         </div>
       </Card>
 
       {/* Content */}
-      <Card className="bg-gray-900 border-gray-700 overflow-hidden">
+      <Card className="bg-gray-900/50 border-gray-700 overflow-hidden">
         {viewMode === 'code' ? (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="border-b border-gray-700 px-4">
@@ -180,7 +199,7 @@ export function CodePreview({ generatedCode, metadata, showPreview = true, onTog
                   </div>
 
                   {/* Code Content */}
-                  <pre className="p-6 bg-gray-950 text-sm text-gray-300 overflow-x-auto max-h-96">
+                  <pre className="p-6 bg-leap-dark text-sm text-gray-300 overflow-x-auto max-h-96">
                     <code>{tab.code}</code>
                   </pre>
                 </div>

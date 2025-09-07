@@ -6,8 +6,8 @@ import {
   FolderOpen, 
   Plus,
   Settings,
-  Sparkles,
-  FileText
+  FileText,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useProjects } from '../hooks/useProjects';
@@ -19,26 +19,18 @@ export function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/', icon: Home, label: 'Home' },
     { path: '/projects', icon: FolderOpen, label: 'Projects' },
-    { path: '/admin', icon: Settings, label: 'Admin' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (
-    <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-800">
-        <div className="flex items-center space-x-2">
-          <Sparkles className="h-8 w-8 text-yellow-400" />
-          <span className="text-xl font-bold">Leap.new</span>
-        </div>
-      </div>
-
+    <div className="w-64 bg-leap-dark border-r border-gray-800 flex flex-col">
       {/* Create New App Button */}
       <div className="p-4">
         <Button 
           asChild
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-medium"
+          className="w-full bg-leap-accent hover:bg-leap-accent/90 text-black font-medium shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Link to="/">
             <Plus className="h-4 w-4 mr-2" />
@@ -66,17 +58,18 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Recent Projects */}
+      {/* Recent Apps */}
       <div className="p-4 border-t border-gray-800">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-          Recent Projects
+        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+          <Zap className="h-3 w-3 mr-1" />
+          Recent Apps
         </h3>
         <div className="space-y-1">
-          {projects?.slice(0, 3).map((project) => (
+          {projects?.slice(0, 5).map((project) => (
             <Link
               key={project.id}
-              to={`/projects/${project.id}`}
-              className="flex items-center px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+              to={`/app/${project.id}`}
+              className="flex items-center px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors group"
             >
               <FileText className="h-4 w-4 mr-3 flex-shrink-0" />
               <span className="truncate">{project.title}</span>
@@ -85,10 +78,10 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* User Info */}
+      {/* User Avatar */}
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-leap-accent to-green-400 flex items-center justify-center">
             <span className="text-sm font-bold text-black">U</span>
           </div>
           <div>
