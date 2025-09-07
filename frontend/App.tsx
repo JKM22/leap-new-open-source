@@ -35,7 +35,7 @@ function App() {
 
 function AppInner() {
   return (
-    <div className="min-h-screen bg-leap-dark text-white">
+    <div className="min-h-screen bg-slate-900 text-white">
       <TopBar />
       
       <div className="flex">

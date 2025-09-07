@@ -18,8 +18,6 @@ export default {
     },
     extend: {
       colors: {
-        'leap-dark': '#0b0b0b',
-        'leap-accent': '#d6ff00',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -75,7 +73,7 @@ export default {
       },
       boxShadow: {
         'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'glow': '0 0 20px rgba(214, 255, 0, 0.3)',
+        'glow': '0 0 20px rgba(253, 224, 71, 0.3)',
       }
     },
   },

@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import backend from '~backend/client';
-import type { GenerateCodeRequest } from '~backend/codegen/types';
+
+interface GenerateCodeRequest {
+  prompt: string;
+  target: "frontend" | "backend" | "infra" | "sql";
+}
 
 // Hook to generate code using the CodeGen service
 export function useGenerateCode() {
@@ -8,7 +12,7 @@ export function useGenerateCode() {
 
   return useMutation({
     mutationFn: async (request: GenerateCodeRequest) => {
-      return await backend.codegen.generate(request);
+      return await backend.codegenService.generate(request);
     },
     onSuccess: () => {
       // Invalidate projects query to refresh the list

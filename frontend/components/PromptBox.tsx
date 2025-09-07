@@ -41,9 +41,7 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
 
     generateCode({
       prompt: prompt.trim(),
-      type: "full-app",
-      framework: "react",
-      includeTests: true
+      target: "frontend"
     }, {
       onSuccess: (data) => {
         toast({
@@ -81,13 +79,13 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
   };
 
   return (
-    <Card className={cn("p-6 bg-gray-900/50 border-gray-700 backdrop-blur-sm shadow-xl", className)}>
+    <Card className={cn("p-6 bg-slate-800/90 border-slate-600 backdrop-blur-sm shadow-xl", className)}>
       <div className="space-y-4">
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Build a real-time chat application using web-sockets, with an 80s retro theme..."
-          className="min-h-[120px] bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 resize-none focus:border-leap-accent focus:ring-leap-accent/20"
+          className="min-h-[120px] bg-slate-700/50 border-slate-500 text-white placeholder-slate-400 resize-none focus:border-yellow-400 focus:ring-yellow-400/20"
           disabled={isPending}
           aria-label="App description prompt"
         />
@@ -99,7 +97,7 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
               size="sm"
               onClick={handleSurpriseMe}
               disabled={isPending}
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-leap-accent/50"
+              className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
             >
               <Shuffle className="h-4 w-4 mr-1" />
               Surprise me
@@ -109,7 +107,7 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
               variant="outline"
               size="sm"
               disabled={isPending}
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-leap-accent/50"
+              className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
             >
               <Database className="h-4 w-4 mr-1" />
               Connect Database
@@ -120,7 +118,7 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
                 variant="outline"
                 size="sm"
                 onClick={onTogglePreview}
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-leap-accent/50"
+                className="border-slate-500 text-slate-200 hover:bg-slate-700 hover:border-yellow-400/50"
               >
                 {showPreview ? (
                   <>
@@ -140,7 +138,7 @@ export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePre
           <Button
             onClick={handleSubmit}
             disabled={isPending || !prompt.trim()}
-            className="bg-leap-accent hover:bg-leap-accent/90 text-black font-medium px-6 shadow-lg hover:shadow-xl transition-all duration-200"
+            className="bg-yellow-500 hover:bg-yellow-400 text-black font-medium px-6 shadow-lg hover:shadow-xl transition-all duration-200"
           >
             {isPending ? (
               <>
