@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Sparkles, Wand2, Database } from 'lucide-react';
+import { Sparkles, Wand2, Database, Eye, EyeOff } from 'lucide-react';
 import { useGenerateCode } from '../hooks/useGenerateCode';
 import { useToast } from '@/components/ui/use-toast';
 
 interface PromptInputProps {
   onCodeGenerated?: (code: any) => void;
+  showPreview: boolean;
+  onTogglePreview: () => void;
 }
 
-export function PromptInput({ onCodeGenerated }: PromptInputProps) {
+export function PromptInput({ onCodeGenerated, showPreview, onTogglePreview }: PromptInputProps) {
   const [prompt, setPrompt] = useState('');
   const { mutate: generateCode, isPending } = useGenerateCode();
   const { toast } = useToast();
@@ -37,6 +39,10 @@ export function PromptInput({ onCodeGenerated }: PromptInputProps) {
           description: "Code generated successfully!"
         });
         onCodeGenerated?.(data);
+        // Auto-show preview when code is generated
+        if (!showPreview) {
+          onTogglePreview();
+        }
       },
       onError: (error) => {
         console.error('Code generation failed:', error);
@@ -110,6 +116,25 @@ export function PromptInput({ onCodeGenerated }: PromptInputProps) {
               >
                 <Database className="h-4 w-4 mr-1" />
                 Connect Database
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onTogglePreview}
+                className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              >
+                {showPreview ? (
+                  <>
+                    <EyeOff className="h-4 w-4 mr-1" />
+                    Hide Preview
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-1" />
+                    Show Preview
+                  </>
+                )}
               </Button>
             </div>
             

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Download, ExternalLink } from 'lucide-react';
+import { Copy, Download, ExternalLink, Eye, EyeOff, Code2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface CodePreviewProps {
@@ -18,10 +18,13 @@ interface CodePreviewProps {
     estimatedLines: number;
     generatedAt: Date;
   };
+  showPreview?: boolean;
+  onTogglePreview?: () => void;
 }
 
-export function CodePreview({ generatedCode, metadata }: CodePreviewProps) {
+export function CodePreview({ generatedCode, metadata, showPreview = true, onTogglePreview }: CodePreviewProps) {
   const [activeTab, setActiveTab] = useState('frontend');
+  const [viewMode, setViewMode] = useState<'code' | 'preview'>('code');
   const { toast } = useToast();
 
   const handleCopy = async (code: string) => {
@@ -60,6 +63,24 @@ export function CodePreview({ generatedCode, metadata }: CodePreviewProps) {
     { key: 'documentation', label: 'Docs', code: generatedCode.documentation, filename: 'README.md' }
   ].filter(tab => tab.code);
 
+  if (!showPreview) {
+    return (
+      <Card className="p-8 bg-gray-900 border-gray-700 text-center">
+        <div className="text-gray-400">
+          <EyeOff className="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <h3 className="text-lg font-semibold mb-2">Preview Hidden</h3>
+          <p className="mb-4">Code preview is hidden until you generate an application</p>
+          {onTogglePreview && (
+            <Button onClick={onTogglePreview} variant="outline" size="sm">
+              <Eye className="h-4 w-4 mr-2" />
+              Show Preview
+            </Button>
+          )}
+        </div>
+      </Card>
+    );
+  }
+
   if (tabs.length === 0) {
     return (
       <Card className="p-8 bg-gray-900 border-gray-700 text-center">
@@ -81,6 +102,34 @@ export function CodePreview({ generatedCode, metadata }: CodePreviewProps) {
           </div>
           
           <div className="flex space-x-2">
+            <div className="flex rounded-lg border border-gray-600 overflow-hidden">
+              <Button
+                size="sm"
+                variant={viewMode === 'code' ? 'default' : 'ghost'}
+                onClick={() => setViewMode('code')}
+                className="rounded-none border-0"
+              >
+                <Code2 className="h-4 w-4 mr-1" />
+                Code
+              </Button>
+              <Button
+                size="sm"
+                variant={viewMode === 'preview' ? 'default' : 'ghost'}
+                onClick={() => setViewMode('preview')}
+                className="rounded-none border-0"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Preview
+              </Button>
+            </div>
+            
+            {onTogglePreview && (
+              <Button size="sm" variant="outline" onClick={onTogglePreview} className="border-gray-600">
+                <EyeOff className="h-4 w-4 mr-1" />
+                Hide
+              </Button>
+            )}
+            
             <Button size="sm" variant="outline" className="border-gray-600">
               <ExternalLink className="h-4 w-4 mr-1" />
               Deploy
@@ -89,54 +138,79 @@ export function CodePreview({ generatedCode, metadata }: CodePreviewProps) {
         </div>
       </Card>
 
-      {/* Code Tabs */}
+      {/* Content */}
       <Card className="bg-gray-900 border-gray-700 overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="border-b border-gray-700 px-4">
-            <TabsList className="bg-transparent h-12">
-              {tabs.map((tab) => (
-                <TabsTrigger
-                  key={tab.key}
-                  value={tab.key}
-                  className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
+        {viewMode === 'code' ? (
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <div className="border-b border-gray-700 px-4">
+              <TabsList className="bg-transparent h-12">
+                {tabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.key}
+                    value={tab.key}
+                    className="data-[state=active]:bg-gray-800 data-[state=active]:text-white"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
-          {tabs.map((tab) => (
-            <TabsContent key={tab.key} value={tab.key} className="mt-0">
-              <div className="relative">
-                {/* Code Actions */}
-                <div className="absolute top-4 right-4 flex space-x-2 z-10">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleCopy(tab.code || '')}
-                    className="bg-gray-800 hover:bg-gray-700"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDownload(tab.code || '', tab.filename)}
-                    className="bg-gray-800 hover:bg-gray-700"
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
+            {tabs.map((tab) => (
+              <TabsContent key={tab.key} value={tab.key} className="mt-0">
+                <div className="relative">
+                  {/* Code Actions */}
+                  <div className="absolute top-4 right-4 flex space-x-2 z-10">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleCopy(tab.code || '')}
+                      className="bg-gray-800 hover:bg-gray-700"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDownload(tab.code || '', tab.filename)}
+                      className="bg-gray-800 hover:bg-gray-700"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Code Content */}
+                  <pre className="p-6 bg-gray-950 text-sm text-gray-300 overflow-x-auto max-h-96">
+                    <code>{tab.code}</code>
+                  </pre>
                 </div>
-
-                {/* Code Content */}
-                <pre className="p-6 bg-gray-950 text-sm text-gray-300 overflow-x-auto max-h-96">
-                  <code>{tab.code}</code>
-                </pre>
+              </TabsContent>
+            ))}
+          </Tabs>
+        ) : (
+          /* Preview Mode */
+          <div className="p-6">
+            <div className="bg-white rounded-lg border shadow-lg min-h-96">
+              <div className="bg-gray-100 px-4 py-2 border-b flex items-center space-x-2">
+                <div className="flex space-x-1">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <div className="text-sm text-gray-600 ml-4">localhost:3000</div>
               </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+              
+              <div className="p-8 text-center text-gray-600">
+                <div className="text-4xl mb-4">🖼️</div>
+                <h3 className="text-lg font-semibold mb-2">Live Preview</h3>
+                <p className="text-sm">Interactive preview will be available once the application is generated</p>
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-xs text-gray-500">Preview shows your generated {metadata.framework || 'React'} application running in real-time</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );

@@ -1,0 +1,123 @@
+type Query {
+  # Get user's notes with optional filtering
+  notes(tags: [String!], limit: Int, offset: Int): NotesConnection!
+  
+  # Get a specific note by ID
+  note(id: ID!): Note
+  
+  # Get all available tags
+  tags: [Tag!]!
+  
+  # Get code generation job status
+  jobStatus(id: ID!): JobStatus
+}
+
+type Mutation {
+  # Create a new note
+  createNote(input: CreateNoteInput!): Note!
+  
+  # Update an existing note
+  updateNote(id: ID!, input: UpdateNoteInput!): Note!
+  
+  # Delete a note
+  deleteNote(id: ID!): Boolean!
+  
+  # Generate code based on prompt
+  generateCode(input: GenerateCodeInput!): CodeGenerationResult!
+}
+
+type Subscription {
+  # Subscribe to note changes for the authenticated user
+  noteUpdates: NoteUpdate!
+}
+
+# Note types
+type Note {
+  id: ID!
+  title: String!
+  body: String!
+  tags: [Tag!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Tag {
+  id: ID!
+  name: String!
+}
+
+type NotesConnection {
+  notes: [Note!]!
+  total: Int!
+}
+
+# Input types for notes
+input CreateNoteInput {
+  title: String!
+  body: String!
+  tagIds: [ID!]
+}
+
+input UpdateNoteInput {
+  title: String
+  body: String
+  tagIds: [ID!]
+}
+
+# Code generation types
+type CodeGenerationResult {
+  jobId: ID!
+  files: [GeneratedFile!]!
+  gitDiff: String!
+}
+
+type GeneratedFile {
+  path: String!
+  content: String!
+  language: String!
+}
+
+input GenerateCodeInput {
+  prompt: String!
+  target: CodeTarget!
+}
+
+enum CodeTarget {
+  FRONTEND
+  BACKEND
+  INFRA
+  SQL
+}
+
+# Job status types
+type JobStatus {
+  id: ID!
+  status: JobStatusEnum!
+  progress: Int!
+  result: CodeGenerationResult
+  error: String
+  createdAt: DateTime!
+  completedAt: DateTime
+}
+
+enum JobStatusEnum {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+# Subscription types
+type NoteUpdate {
+  type: NoteUpdateType!
+  note: Note!
+}
+
+enum NoteUpdateType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+# Scalar types
+scalar DateTime
