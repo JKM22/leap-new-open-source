@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PromptBox } from '../components/PromptBox';
-import { CodePreview } from '../components/CodePreview';
 import { Sparkles, Zap, Code, Database, Globe, Rocket } from 'lucide-react';
 
 export function Home() {

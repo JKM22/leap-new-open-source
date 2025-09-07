@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Sparkles, Wand2, Database, Shuffle } from 'lucide-react';
+import { Sparkles, Wand2, Database, Shuffle, Eye, EyeOff } from 'lucide-react';
 import { useGenerateCode } from '../hooks/useGenerateCode';
 import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 interface PromptBoxProps {
   onCodeGenerated?: (code: any) => void;
   className?: string;
+  showPreview?: boolean;
+  onTogglePreview?: () => void;
 }
 
-export function PromptBox({ onCodeGenerated, className }: PromptBoxProps) {
+export function PromptBox({ onCodeGenerated, className, showPreview, onTogglePreview }: PromptBoxProps) {
   const [prompt, setPrompt] = useState('');
   const { mutate: generateCode, isPending } = useGenerateCode();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const handleFillPrompt = (event: CustomEvent) => {
+      setPrompt(event.detail);
+    };
+    window.addEventListener('fillPrompt', handleFillPrompt as EventListener);
+    return () => {
+      window.removeEventListener('fillPrompt', handleFillPrompt as EventListener);
+    };
+  }, []);
 
   const handleSubmit = () => {
     if (!prompt.trim()) {
@@ -38,6 +51,9 @@ export function PromptBox({ onCodeGenerated, className }: PromptBoxProps) {
           description: "App generated successfully!"
         });
         onCodeGenerated?.(data);
+        if (showPreview === false && onTogglePreview) {
+          onTogglePreview();
+        }
       },
       onError: (error) => {
         console.error('Code generation failed:', error);
@@ -98,6 +114,27 @@ export function PromptBox({ onCodeGenerated, className }: PromptBoxProps) {
               <Database className="h-4 w-4 mr-1" />
               Connect Database
             </Button>
+
+            {onTogglePreview && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onTogglePreview}
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-leap-accent/50"
+              >
+                {showPreview ? (
+                  <>
+                    <EyeOff className="h-4 w-4 mr-1" />
+                    Hide Preview
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-1" />
+                    Show Preview
+                  </>
+                )}
+              </Button>
+            )}
           </div>
           
           <Button

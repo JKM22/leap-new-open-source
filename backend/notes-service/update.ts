@@ -82,15 +82,15 @@ export const updateNote = api<UpdateNoteRequest, Note>(
           }
           
           // Get tag details
-          const tagRows = await tx.queryAll<{ id: number; name: string }>`
-            SELECT id, name FROM tags WHERE id = ANY(${req.tagIds})
+          const tagRows = await tx.queryAll<{ id: number; name: string; color: string }>`
+            SELECT id, name, color FROM tags WHERE id = ANY(${req.tagIds})
           `;
           tags.push(...tagRows);
         }
       } else {
         // Get existing tags
-        const tagRows = await tx.queryAll<{ id: number; name: string }>`
-          SELECT t.id, t.name
+        const tagRows = await tx.queryAll<{ id: number; name: string; color: string }>`
+          SELECT t.id, t.name, t.color
           FROM tags t
           JOIN note_tags nt ON t.id = nt.tag_id
           WHERE nt.note_id = ${req.id}

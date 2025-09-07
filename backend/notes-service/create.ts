@@ -47,8 +47,8 @@ export const createNote = api<CreateNoteRequest, Note>(
         }
         
         // Get tag details
-        const tagRows = await tx.queryAll<{ id: number; name: string }>`
-          SELECT id, name FROM tags WHERE id = ANY(${req.tagIds})
+        const tagRows = await tx.queryAll<{ id: number; name: string; color: string }>`
+          SELECT id, name, color FROM tags WHERE id = ANY(${req.tagIds})
         `;
         tags.push(...tagRows);
       }

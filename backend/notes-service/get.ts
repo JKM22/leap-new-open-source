@@ -31,8 +31,9 @@ export const getNote = api<GetNoteRequest, Note>(
     const tagRows = await notesDB.queryAll<{
       id: number;
       name: string;
+      color: string;
     }>`
-      SELECT t.id, t.name
+      SELECT t.id, t.name, t.color
       FROM tags t
       JOIN note_tags nt ON t.id = nt.tag_id
       WHERE nt.note_id = ${req.id}

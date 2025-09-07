@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PromptInput } from '../components/PromptInput';
+import { PromptBox } from '../components/PromptBox';
 import { CodePreview } from '../components/CodePreview';
 
 export function Dashboard() {
@@ -17,7 +17,7 @@ export function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
             {/* Left Column - Prompt Input */}
             <div className="flex flex-col justify-center">
-              <PromptInput 
+              <PromptBox
                 onCodeGenerated={setGeneratedCode}
                 showPreview={showPreview}
                 onTogglePreview={handleTogglePreview}

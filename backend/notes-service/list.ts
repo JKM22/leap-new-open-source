@@ -84,8 +84,9 @@ async function getTagsForNotes(noteIds: number[]) {
     note_id: number;
     tag_id: number;
     name: string;
+    color: string;
   }>(
-    `SELECT nt.note_id, t.id as tag_id, t.name
+    `SELECT nt.note_id, t.id as tag_id, t.name, t.color
      FROM note_tags nt
      JOIN tags t ON nt.tag_id = t.id
      WHERE nt.note_id = ANY($1)`,
@@ -99,7 +100,8 @@ async function getTagsForNotes(noteIds: number[]) {
     }
     tagsByNote[row.note_id].push({
       id: row.tag_id,
-      name: row.name
+      name: row.name,
+      color: row.color
     });
   }
   
